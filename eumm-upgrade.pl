@@ -10,7 +10,7 @@ my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
   die "Module::Install is used, no need to upgrade";
 }
-if ($content =~ /WriteMakefile1\s+\(/) {
+if ($content =~ /WriteMakefile1\s*\(/) {
   say "Upgrade is already applied";
   exit;
 }
@@ -50,6 +50,19 @@ $content=~s/
 \s+AUTHOR\s*=>\s*'([^'\n]+)\Q') : ()),\E\s+
 /ABSTRACT_FROM => '$1',\n    AUTHOR => '$2',\n/sx;
 
+my $addon='';
+
+my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
+print "Repository found: $repo\n";
+$addon.=<<EOT;
+
+    META_MERGE => {
+        resources => {
+            repository => '$repo',
+        },
+    },
+EOT
+$content=~s/WriteMakefile\s*\(/WriteMakefile1($addon/s;
 
 $content=~s/[\r\n]+$//s;
 $content.="\n\n$compat_layer";
