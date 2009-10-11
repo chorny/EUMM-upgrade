@@ -122,6 +122,8 @@ if ($content=~/VERSION_FROM\s*=>\s*'([^'\n]+)'/) {
       }
     }
   }
+} else {
+  print "VERSION_FROM not found\n";
 }
 if (@resourses) {
   my $res=join("\n",@resourses);
