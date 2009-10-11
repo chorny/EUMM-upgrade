@@ -35,7 +35,7 @@ if ($indentation_type =~ /^[sm](\d+)/) {
 sub apply_indent {
   my $content=shift;
   my $i_from=shift || die;
-  my $i_to=shift || die;
+  my $i_to=shift;
   sub _do_replace {
     my $spaces=shift;
     my $i_from=shift;
@@ -107,6 +107,12 @@ if ($content=~/VERSION_FROM\s*=>\s*'([^'\n]+)'/) {
       push @resourses,"${space}${space}${space}bugtracker => '$bt',";
     } elsif (@links>1) {
       print "Too many links to bugtrackers found in $main_file\n";
+    }
+    if ($content !~ /\bLICENSE\s*=>\s*['"]/) {
+      my $l=Module::Install::Metadata::_extract_license($main_file_content);
+      if ($l) {
+        push @param,"    LICENSE => '$l',\n";
+      }
     }
   }
 }
