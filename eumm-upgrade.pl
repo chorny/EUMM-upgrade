@@ -52,7 +52,7 @@ $content=~s/
 \s+AUTHOR\s*=>\s*'([^'\n]+)\Q') : ()),\E\s+
 /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
-my $addon='';
+my @param;
 
 my @resourses;
 my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
@@ -79,17 +79,20 @@ if ($content=~/VERSION_FROM\s*=>\s*'([^'\n]+)'/) {
 }
 if (@resourses) {
   my $res=join("\n",@resourses);
-  $addon.=<<EOT;
-
+  push @param,<<EOT;
     META_MERGE => {
         resources => {
 $res
         },
     },
 EOT
-  $addon=~s/\s+$//s;
 }
-$content=~s/WriteMakefile\s*\(/WriteMakefile1($addon/s;
+my $param='';
+if (@param) {
+  $param="\n".join('',@param);
+  $param=~s/\s+$//s;
+}
+$content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
 $content=~s/[\r\n]+$//s;
 $content.="\n\n$compat_layer";
