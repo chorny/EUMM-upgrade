@@ -114,6 +114,13 @@ if ($content=~/VERSION_FROM\s*=>\s*'([^'\n]+)'/) {
         push @param,"    LICENSE => '$l',\n";
       }
     }
+    if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"]/) {
+      my $version=Module::Install::Metadata::_extract_perl_version($main_file_content) ||
+        Module::Install::Metadata::_extract_perl_version($content);
+      if ($version) {
+        push @param,"    MIN_PERL_VERSION => '$version',\n";
+      }
+    }
   }
 }
 if (@resourses) {
