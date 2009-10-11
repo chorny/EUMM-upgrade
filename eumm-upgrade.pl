@@ -45,11 +45,12 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.20
     WriteMakefile(%params);
 }
 EOT
+my $space=' 'x4;
 $content=~s/
 \(\$\]\s*>=\s*5\.005\s*\?\s*\#\#\s*\QAdd these new keywords supported since 5.005\E\s*
 \s+\Q(ABSTRACT_FROM  => '\E([^'\n]+)',\s*\#\s*\Qretrieve abstract from module\E\s*
 \s+AUTHOR\s*=>\s*'([^'\n]+)\Q') : ()),\E\s+
-/ABSTRACT_FROM => '$1',\n    AUTHOR => '$2',\n/sx;
+/ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
 my $addon='';
 
@@ -57,15 +58,33 @@ my @resourses;
 my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
 if ($repo and $repo=~m#://#) {
   print "Repository found: $repo\n";
-  push @resourses,"            repository => '$repo',\n";
+  push @resourses,"${space}${space}${space}repository => '$repo',";
 }
 
+if ($content=~/VERSION_FROM\s*=>\s*'([^'\n]+)'/) {
+  my $main_file=$1;
+  my $main_file_content=eval { read_file($1) };
+  if (!$main_file_content) {
+    print "Cannot open $main_file\n";
+  } else {
+    my @links=Module::Install::Metadata::_extract_bugtracker($main_file_content);
+    if (@links==1) {
+      my $bt=$links[0];
+      print "Bugtracker found: $bt\n";
+      push @resourses,"${space}${space}${space}bugtracker => '$bt',";
+    } elsif (@links>1) {
+      print "Too many links to bugtrackers found in $main_file\n";
+    }
+  }
+}
 if (@resourses) {
+  my $res=join("\n",@resourses);
   $addon.=<<EOT;
 
     META_MERGE => {
         resources => {
-@{resourses}        },
+$res
+        },
     },
 EOT
   $addon=~s/\s+$//s;
