@@ -6,6 +6,7 @@ use warnings;
 use Perl6::Say;
 use File::Slurp;
 require Module::Install::Repository;
+require Module::Install::Metadata;
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
   die "Module::Install is used, no need to upgrade";
@@ -52,16 +53,21 @@ $content=~s/
 
 my $addon='';
 
+my @resourses;
 my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
 print "Repository found: $repo\n";
-$addon.=<<EOT;
+push @resourses,"            repository => '$repo',\n";
+
+if (@resourses) {
+  $addon.=<<EOT;
 
     META_MERGE => {
         resources => {
-            repository => '$repo',
-        },
+@{resourses}        },
     },
 EOT
+  $addon=~s/\s+$//s;
+}
 $content=~s/WriteMakefile\s*\(/WriteMakefile1($addon/s;
 
 $content=~s/[\r\n]+$//s;
