@@ -7,6 +7,7 @@ use Perl6::Say;
 use File::Slurp;
 require Module::Install::Repository;
 require Module::Install::Metadata;
+use Text::FindIndent;
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
   die "Module::Install is used, no need to upgrade";
@@ -17,6 +18,38 @@ if ($content =~ /WriteMakefile1\s*\(/) {
 }
 if ($content !~ /use ExtUtils::MakeMaker/ or $content !~ /WriteMakefile\s*\(/) {
   die "ExtUtils::MakeMaker is not used";
+}
+my $indentation_type = Text::FindIndent->parse($content);
+my $space_to_use;
+if ($indentation_type =~ /^[sm](\d+)/) {
+  print "Indentation with $1 spaces\n";
+  $space_to_use=$1;
+} elsif ($indentation_type =~ /^t(\d+)/) {
+  print "Indentation with tabs, a tab should indent by $1 characters\n";
+  $space_to_use=0;
+} else {
+  print "Indentation unknown, will use 4 spaces\n";
+  $space_to_use=4;
+}
+
+sub apply_indent {
+  my $content=shift;
+  my $i_from=shift || die;
+  my $i_to=shift || die;
+  sub _do_replace {
+    my $spaces=shift;
+    my $i_from=shift;
+    my $i_to=shift;
+    my $len=length($spaces);
+    my $l1=int($len/$i_from);
+    if ($i_to==0) {
+      return "\t"x$l1;
+    } else {
+      return " " x ($l1*$i_to);
+    }
+  }
+  $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$i_to)/emg;
+  return $content;
 }
 
 my $compat_layer=<<'EOT';
@@ -41,7 +74,7 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.20
     delete $params{AUTHOR} if $] < 5.005;
     delete $params{ABSTRACT_FROM} if $] < 5.005;
     delete $params{BINARY_LOCATION} if $] < 5.005;
-    
+
     WriteMakefile(%params);
 }
 EOT
@@ -95,7 +128,7 @@ if (@param) {
 $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
 $content=~s/[\r\n]+$//s;
-$content.="\n\n$compat_layer";
+$content.="\n\n".apply_indent($compat_layer,4,$space_to_use);
 
 
 rename('Makefile.PL','Makefile.PL.bak');
