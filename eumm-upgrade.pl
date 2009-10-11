@@ -55,8 +55,10 @@ my $addon='';
 
 my @resourses;
 my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
-print "Repository found: $repo\n";
-push @resourses,"            repository => '$repo',\n";
+if ($repo and $repo=~m#://#) {
+  print "Repository found: $repo\n";
+  push @resourses,"            repository => '$repo',\n";
+}
 
 if (@resourses) {
   $addon.=<<EOT;
