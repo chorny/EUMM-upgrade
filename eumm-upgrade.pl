@@ -129,6 +129,7 @@ EOT
 my $param='';
 if (@param) {
   $param="\n".join('',@param);
+  $param=apply_indent($param,4,$space_to_use)
   $param=~s/\s+$//s;
 }
 $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
