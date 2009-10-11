@@ -85,6 +85,12 @@ $content=~s/
 \s+AUTHOR\s*=>\s*'([^'\n]+)\Q') : ()),\E\s+
 /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
+$content=~s/
+	\(\s*\$ \QExtUtils::MakeMaker::VERSION ge '\E [\d\._]+ \Q' ? (\E \s+
+	( [^()]+? ) \s+
+	\)\s*\:\s*\(\)\s*\),
+/$1/sxg;
+
 my @param;
 
 my @resourses;
