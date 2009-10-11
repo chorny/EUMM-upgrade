@@ -44,8 +44,14 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.20
     WriteMakefile(%params);
 }
 EOT
+$content=~s/
+\(\$\]\s*>=\s*5\.005\s*\?\s*\#\#\s*\QAdd these new keywords supported since 5.005\E\s*
+\s+\Q(ABSTRACT_FROM  => '\E([^'\n]+)',\s*\#\s*\Qretrieve abstract from module\E\s*
+\s+AUTHOR\s*=>\s*'([^'\n]+)\Q') : ()),\E\s+
+/ABSTRACT_FROM => '$1',\n    AUTHOR => '$2',\n/sx;
 
-$content=~s/[\r\n]+//s;
+
+$content=~s/[\r\n]+$//s;
 $content.="\n\n$compat_layer";
 
 
