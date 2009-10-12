@@ -130,7 +130,14 @@ if ($content=~/\bVERSION_FROM['"]?\s*=>\s*'([^'\n]+)'/) {
   }
 } else {
   print "VERSION_FROM not found\n";
+  if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"]/) {
+    my $version=Module::Install::Metadata::_extract_perl_version($content);
+    if ($version) {
+      push @param,"    MIN_PERL_VERSION => '$version',\n";
+    }
+  }
 }
+
 if (@resourses) {
   my $res=join("\n",@resourses);
   push @param,<<EOT;
