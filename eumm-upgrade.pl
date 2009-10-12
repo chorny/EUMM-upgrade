@@ -158,6 +158,11 @@ $res
     },
 EOT
   }
+
+  if ($content !~ /\bBUILD_REQUIRES\s*=>\s*\{/) {
+    push @param,"    #BUILD_REQUIRES => {\n"."    #},\n";
+  }
+  
   my $param='';
   if (@param) {
     $param="\n".join('',@param);
