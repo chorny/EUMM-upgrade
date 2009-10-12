@@ -142,7 +142,7 @@ EOT
     }
   }
 
-  if (@resourses) {
+  if (@resourses and $content !~ /\bMETA_MERGE\s*=>\s*['"]/) {
     my $res=join("\n",@resourses);
     push @param,<<EOT;
     META_MERGE => {
