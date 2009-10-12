@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Perl6::Say;
+#use Perl6::Say;
 use File::Slurp;
 require Module::Install::Repository;
 require Module::Install::Metadata;
@@ -14,7 +14,7 @@ if ($content =~ /use inc::Module::Install/) {
   die "Module::Install is used, no need to upgrade";
 }
 if ($content =~ /WriteMakefile1\s*\(/) {
-  say "Upgrade is already applied";
+  print "Upgrade is already applied\n";
   exit;
 }
 if ($content !~ /use ExtUtils::MakeMaker/ or $content !~ /WriteMakefile\s*\(/) {
@@ -166,3 +166,12 @@ EOT
 
 rename('Makefile.PL','Makefile.PL.bak');
 write_file('Makefile.PL',process_file($content));
+
+=pod
+
+If you need to delare number spaces in indent in Makefile.PL, use following string at start of it
+(set 'c-basic-offset' to your value):
+
+# -*- mode: perl; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+=cut
