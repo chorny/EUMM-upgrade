@@ -134,7 +134,7 @@ EOT
     }
   } else {
     print "VERSION_FROM not found\n";
-    if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"]/) {
+    if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"\d]/) {
       my $version=Module::Install::Metadata::_extract_perl_version($content);
       if ($version) {
         push @param,"    MIN_PERL_VERSION => '$version',\n";
@@ -142,7 +142,7 @@ EOT
     }
   }
 
-  if (@resourses and $content !~ /\bMETA_MERGE\s*=>\s*['"]/) {
+  if (@resourses and $content !~ /\bMETA_MERGE\s*=>\s*\{/) {
     my $res=join("\n",@resourses);
     push @param,<<EOT;
     META_MERGE => {
