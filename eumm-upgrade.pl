@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+#License: GPL (may change in the future)
+
 #use Perl6::Say;
 use File::Slurp;
 require Module::Install::Repository;
