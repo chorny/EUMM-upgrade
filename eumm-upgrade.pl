@@ -109,6 +109,11 @@ EOT
   my $repo = Module::Install::Repository::_find_repo(\&Module::Install::Repository::_execute);
   if ($repo and $repo=~m#://#) {
     print "Repository found: $repo\n";
+    eval {
+      require NGP;
+      $repo=NGP::github_parent($repo);
+
+    };
     push @resourses,"${space}${space}${space}repository => '$repo',";
   }
 
