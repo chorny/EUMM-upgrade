@@ -92,10 +92,14 @@ EOT
   /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
   $content=~s/
-          \(\s*\$ \QExtUtils::MakeMaker::VERSION ge '\E [\d\._]+ \Q' ? (\E \s+
-          ( [^()]+? ) \s+
+          \(\s*\$ ExtUtils::MakeMaker::VERSION\s+
+          (?:ge\s+'\E [\d\._]+ ' | >=?\s*[\d\._]+)\s+\Q? (\E \s*
+          ( [^()]+? ) \s*
           \)\s*\:\s*\(\)\s*\),
   /$1/sxg;
+    #($ExtUtils::MakeMaker::VERSION >= 6.3002
+    #    ? ('LICENSE' => 'perl')
+    #    : ()),
 
   $content=~s/
           \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
