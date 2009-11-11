@@ -182,8 +182,12 @@ EOT
   }
   $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
-  $content=~s/[\r\n]+$//s;
-  $content.="\n\n".apply_indent($compat_layer,4,$space_to_use);
+  #$content=~s/[\r\n]+$//s;
+  $compat_layer="\n\n".apply_indent($compat_layer,4,$space_to_use);
+  $content=~s/(__DATA__ | $ )/$compat_layer$1/sx;
+  # |
+  #
+  return $content;
 }
 
 rename('Makefile.PL','Makefile.PL.bak');
