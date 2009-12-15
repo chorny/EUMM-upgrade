@@ -7,8 +7,8 @@ use warnings;
 
 #use Perl6::Say;
 use File::Slurp;
-require Module::Install::Repository;
-require Module::Install::Metadata;
+#require Module::Install::Repository;
+#require Module::Install::Metadata;
 use Text::FindIndent;
 
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
@@ -199,4 +199,142 @@ If you need to declare number spaces in indent in Makefile.PL, use following str
 
 # -*- mode: perl; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
+(c) Alexandr Ciornii
 =cut
+
+package Module::Install::Metadata;
+
+sub _extract_perl_version {
+	if (
+		$_[0] =~ m/
+		^\s*
+		(?:use|require) \s*
+		v?
+		([\d_\.]+)
+		\s* ;
+		/ixms
+	) {
+		my $perl_version = $1;
+		$perl_version =~ s{_}{}g;
+		return $perl_version;
+	} else {
+		return;
+	}
+}
+
+sub _extract_license {
+	if (
+		$_[0] =~ m/
+		(
+			=head \d \s+
+			(?:licen[cs]e|licensing|copyrights?|legal)\b
+			.*?
+		)
+		(=head\\d.*|=cut.*|)
+		\z
+	/ixms ) {
+		my $license_text = $1;
+		my @phrases      = (
+			'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
+			'GNU general public license'         => 'gpl',         1,
+			'GNU public license'                 => 'gpl',         1,
+			'GNU lesser general public license'  => 'lgpl',        1,
+			'GNU lesser public license'          => 'lgpl',        1,
+			'GNU library general public license' => 'lgpl',        1,
+			'GNU library public license'         => 'lgpl',        1,
+			'BSD license'                        => 'bsd',         1,
+			'Artistic license'                   => 'artistic',    1,
+			'GPL'                                => 'gpl',         1,
+			'LGPL'                               => 'lgpl',        1,
+			'BSD'                                => 'bsd',         1,
+			'Artistic'                           => 'artistic',    1,
+			'MIT'                                => 'mit',         1,
+			'proprietary'                        => 'proprietary', 0,
+		);
+		while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
+			$pattern =~ s#\s+#\\s+#g;
+			if ( $license_text =~ /\b$pattern\b/i ) {
+			        return $license;
+			}
+		}
+	} else {
+	        return;
+	}
+}
+
+sub _extract_bugtracker {
+	my @links   = $_[0] =~ m#L<(
+	 \Qhttp://rt.cpan.org/\E[^>]+|
+	 \Qhttp://github.com/\E[\w_]+/[\w_]+/issues|
+	 \Qhttp://code.google.com/p/\E[\w_\-]+/issues/list
+	 )>#gx;
+	my %links;
+	@links{@links}=();
+	@links=keys %links;
+	return @links;
+}
+
+1;
+
+package Module::Install::Repository;
+
+sub _execute {
+    my ($command) = @_;
+    `$command`;
+}
+
+sub _find_repo {
+    my ($execute) = @_;
+
+    if (-e ".git") {
+        # TODO support remote besides 'origin'?
+        if ($execute->('git remote show -n origin') =~ /URL: (.*)$/m) {
+            # XXX Make it public clone URL, but this only works with github
+            my $git_url = $1;
+            $git_url =~ s![\w\-]+\@([^:]+):!git://$1/!;
+            return $git_url;
+        } elsif ($execute->('git svn info') =~ /URL: (.*)$/m) {
+            return $1;
+        }
+    } elsif (-e ".svn") {
+        if (`svn info` =~ /URL: (.*)$/m) {
+            return $1;
+        }
+    } elsif (-e "_darcs") {
+        # defaultrepo is better, but that is more likely to be ssh, not http
+        if (my $query_repo = `darcs query repo`) {
+            if ($query_repo =~ m!Default Remote: (http://.+)!) {
+                return $1;
+            }
+        }
+
+        open my $handle, '<', '_darcs/prefs/repos' or return;
+        while (<$handle>) {
+            chomp;
+            return $_ if m!^http://!;
+        }
+    } elsif (-e ".hg") {
+        if ($execute->('hg paths') =~ /default = (.*)$/m) {
+            my $mercurial_url = $1;
+            $mercurial_url =~ s!^ssh://hg\@(bitbucket\.org/)!https://$1!;
+            return $mercurial_url;
+        }
+    } elsif (-e "$ENV{HOME}/.svk") {
+        # Is there an explicit way to check if it's an svk checkout?
+        my $svk_info = `svk info` or return;
+        SVK_INFO: {
+            if ($svk_info =~ /Mirrored From: (.*), Rev\./) {
+                return $1;
+            }
+
+            if ($svk_info =~ m!Merged From: (/mirror/.*), Rev\.!) {
+                $svk_info = `svk info /$1` or return;
+                redo SVK_INFO;
+            }
+        }
+
+        return;
+    }
+}
+
+1;
