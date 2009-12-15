@@ -203,6 +203,8 @@ If you need to declare number spaces in indent in Makefile.PL, use following str
 =cut
 
 package Module::Install::Metadata;
+#by Adam Kennedy and Alexandr Ciornii
+#See Module::Install for copyright
 
 sub _extract_perl_version {
 	if (
@@ -277,6 +279,9 @@ sub _extract_bugtracker {
 1;
 
 package Module::Install::Repository;
+#by Tatsuhiko Miyagawa
+#See Module::Install::Repository for copyright
+
 
 sub _execute {
     my ($command) = @_;
