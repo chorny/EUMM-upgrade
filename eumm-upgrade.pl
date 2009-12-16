@@ -201,7 +201,7 @@ If you need to declare number spaces in indent in Makefile.PL, use following str
 
 App::EUMM::Upgrade
 
-eumm-upgrade is a tool to allow using new features of ExtUtils::MakeMaker without loosing
+eumm-upgrade is a tool to allow using new features of ExtUtils::MakeMaker without losing
 compatibility with older versions. It adds compatibility code to Makefile.PL and
 tries to automatically detect some properties like license, minimum Perl version required and
 repository used.

@@ -1,0 +1,15 @@
+    If you need to declare number spaces in indent in Makefile.PL, use
+    following string at start of it (set 'c-basic-offset' to your value):
+
+    # -*- mode: perl; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+    App::EUMM::Upgrade
+
+    eumm-upgrade is a tool to allow using new features of
+    ExtUtils::MakeMaker without losing compatibility with older versions. It
+    adds compatibility code to Makefile.PL and tries to automatically detect
+    some properties like license, minimum Perl version required and
+    repository used.
+
+    (c) Alexandr Ciornii
+
