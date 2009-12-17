@@ -1,0 +1,7 @@
+Build.PL
+Changes
+MANIFEST
+README
+lib/App/EUMM/Upgrade.pm
+t/00-load.t
+t/pod.t

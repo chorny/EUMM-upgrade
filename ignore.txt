@@ -1,0 +1,14 @@
+blib*
+Makefile
+Makefile.old
+Build
+_build*
+pm_to_blib*
+*.tar.gz
+.lwpcookies
+App-EUMM-Upgrade-*
+cover_db
+1
+2
+.gitignore
+a
