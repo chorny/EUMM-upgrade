@@ -23,6 +23,14 @@ compatibility with older versions. It adds compatibility code to Makefile.PL and
 tries to automatically detect some properties like license, minimum Perl version required and
 repository used.
 
+Just run eumm-upgrade.pl in directory with Makefile.PL. Old file will be copied to Makefile.PL.bak.
+If you use Github, Internet connection is required.
+
+If you need to declare number of spaces in indent in Makefile.PL, use following string at start of
+it (set 'c-basic-offset' to your value):
+
+# -*- mode: perl; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
 =head1 AUTHOR
 
 Alexandr Ciornii, C<< <alexchorny at gmail.com> >>
