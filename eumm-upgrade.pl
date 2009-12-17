@@ -203,6 +203,9 @@ repository used.
 Just run eumm-upgrade.pl in directory with Makefile.PL. Old file will be copied to Makefile.PL.bak.
 If you use Github, Internet connection is required.
 
+You need to check resulting Makefile.PL manually as transformation is done
+with regular expressions.
+
 If you need to declare number of spaces in indent in Makefile.PL, use following string at start of
 it (set 'c-basic-offset' to your value):
 
