@@ -12,3 +12,4 @@ cover_db
 2
 .gitignore
 a
+Build.bat

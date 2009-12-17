@@ -79,12 +79,7 @@ L<http://search.cpan.org/dist/App-EUMM-Upgrade/>
 
 Copyright 2009 Alexandr Ciornii.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
-
+GPL v3
 
 =cut
 
