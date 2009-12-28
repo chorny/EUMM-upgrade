@@ -93,13 +93,10 @@ EOT
 
   $content=~s/
           \(\s*\$ ExtUtils::MakeMaker::VERSION\s+
-          (?:ge\s+'\E [\d\._]+ ' | >=?\s*[\d\._]+)\s+\Q? (\E \s*
+          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E \s*
           ( [^()]+? ) \s*
           \)\s*\:\s*\(\)\s*\),
-  /$1/sxg;
-    #($ExtUtils::MakeMaker::VERSION >= 6.3002
-    #    ? ('LICENSE' => 'perl')
-    #    : ()),
+  /$space$1/sxg;
 
   $content=~s/
           \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
