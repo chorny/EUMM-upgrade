@@ -98,6 +98,8 @@ EOT
           \)\s*\:\s*\(\)\s*\),
   /$space$1/sxg;
 
+  $content=~s/(WriteMakefile\()(\S)/$1\n$space$2/;
+
   $content=~s/
           \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
           ( [^()]+? ) \s+
@@ -177,7 +179,7 @@ EOT
   if (@param) {
     $param="\n".join('',@param);
     $param=apply_indent($param,4,$space_to_use);
-    $param=~s/\s+$//s;
+    $param=~s/\s+$/\n/s;
   }
   $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
