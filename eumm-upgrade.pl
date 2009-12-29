@@ -118,7 +118,7 @@ EOT
     push @resourses,"${space}${space}${space}repository => '$repo',";
   }
 
-  if ($content=~/\bVERSION_FROM['"]?\s*=>\s*'([^'\n]+)'/) {
+  if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/) {
     my $main_file=$1;
     my $main_file_content=eval { read_file($1) };
     if (!$main_file_content) {
