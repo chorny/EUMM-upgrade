@@ -20,7 +20,7 @@ if ($content =~ /WriteMakefile1\s*\(/) {
   print "Upgrade is already applied\n";
   exit;
 }
-if ($content !~ /use ExtUtils::MakeMaker/ or $content !~ /WriteMakefile\s*\(/) {
+if ($content !~ /\b(?:use|require) ExtUtils::MakeMaker/ or $content !~ /WriteMakefile\s*\(/) {
   die "ExtUtils::MakeMaker is not used";
 }
 
@@ -116,6 +116,8 @@ EOT
 
     };
     push @resourses,"${space}${space}${space}repository => '$repo',";
+  } else {
+    push @resourses,"${space}${space}${space}#repository => 'URL to repository here',";
   }
 
   if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/) {
