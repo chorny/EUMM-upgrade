@@ -138,7 +138,7 @@ EOT
           push @param,"    LICENSE => '$l',\n";
         }
       }
-      if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"]/) {
+      if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"]?\d/) {
         my $version=Module::Install::Metadata::_extract_perl_version($main_file_content) ||
           Module::Install::Metadata::_extract_perl_version($content);
         if ($version) {
