@@ -1,5 +1,9 @@
 Revision history for App-EUMM-Upgrade
 
+0.22    ?
+        Better detection of version-checking constructs
+        Better search for 'Perl' license
+
 0.21    2009-12-18
         First version released to CPAN
 

@@ -251,6 +251,7 @@ sub _extract_license {
 		my $license_text = $1;
 		my @phrases      = (
 			'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
+			'under the terms of (?:perl|the perl programming language) itself' => 'perl', 1,
 			'GNU general public license'         => 'gpl',         1,
 			'GNU public license'                 => 'gpl',         1,
 			'GNU lesser general public license'  => 'lgpl',        1,
