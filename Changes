@@ -1,6 +1,6 @@
 Revision history for App-EUMM-Upgrade
 
-0.30    2009-01-11
+0.22    2009-01-11
         Better detection of version-checking constructs
         Better search for 'Perl' license
         Better detection of indent type
