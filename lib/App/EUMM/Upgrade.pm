@@ -34,6 +34,21 @@ it (set 'c-basic-offset' to your value):
 
 # -*- mode: perl; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
+=head1 new EUMM features
+
+LICENSE - shows license on search.cpan.org
+
+META_MERGE - add something (like repository URL or bugtracker UTL) to META.yml. Repository and
+bugtracker URL are used on search.cpan.org.
+
+MIN_PERL_VERSION - minimum version of Perl required for module work. Not used currently, but will
+be in the future.
+
+CONFIGURE_REQUIRES - modules that are used in Makefile.PL and should be installed before running it.
+
+BUILD_REQUIRES - modules that are used in installation and testing, but are not required by module
+itself. Useful for ppm/OS package generaton and metadata parsing tools.
+
 =head1 AUTHOR
 
 Alexandr Ciornii, C<< <alexchorny at gmail.com> >>
