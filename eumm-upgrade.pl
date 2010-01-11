@@ -26,7 +26,7 @@ if ($content !~ /\b(?:use|require) ExtUtils::MakeMaker/ or $content !~ /WriteMak
 
 sub process_file {
   my $content=shift;
-  my $indentation_type = Text::FindIndent->parse($content);
+  my $indentation_type = Text::FindIndent->parse($content,first_level_indent_only=>1);
   my $space_to_use;
   if ($indentation_type =~ /^[sm](\d+)/) {
     print "Indentation with $1 spaces\n";
