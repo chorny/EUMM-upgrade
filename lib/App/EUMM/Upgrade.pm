@@ -101,4 +101,9 @@ GPL v3
 
 =cut
 
+sub _unindent {
+  my $string=shift;
+  my $style=shift;
+}
+
 1; # End of App::EUMM::Upgrade
