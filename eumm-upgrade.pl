@@ -10,7 +10,7 @@ use warnings;
 use File::Slurp;
 #require Module::Install::Repository;
 #require Module::Install::Metadata;
-use Text::FindIndent;
+use Text::FindIndent 0.08;
 
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
