@@ -3,6 +3,7 @@ Makefile.PL.bak
 1
 2
 a
+test1
 blib
 App-EUMM-Upgrade*
 

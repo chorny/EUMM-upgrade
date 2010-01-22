@@ -101,9 +101,63 @@ GPL v3
 
 =cut
 
+sub _indent_space_number {
+  my $str=shift;
+  $str=~/^(\s+)/ or return 0;
+  my $ind=$1; 
+  $ind=~s/\t/        /gs;
+  return length($ind);
+}
+
+sub _unindent_t {
+#  my $replace
+#  die unless
+}
 sub _unindent {
-  my $string=shift;
-  my $style=shift;
+  my $space_string_to_set=shift;
+  my $text=shift;
+  my @lines=split /[\r\n]+/s,$text;
+  use List::Util qw/min/;
+  my $minspace=min(map {_indent_space_number($_)} @lines);
+  my $s1=_indent_space_number($space_string_to_set);
+  die if $s1 < $minspace;
+  return $text if $s1==$minspace;
+  my $pace_str
+  foreach my $l (@lines) {
+    $l=~s///;
+  }
+
+  #foreach
+  #$text=~s/^(\s+)(\S)/_unindent_t(qq{$1},qq{$space_string_to_set}).qq{$2}/egm;
+  
+  #my $style=shift;
+}
+
+sub remove_conditional_code {
+  my $content=shift;
+  my $space=shift;
+  $content=~s/(WriteMakefile\()(\S)/$1\n$space$2/;
+
+  $content=~s/
+  \(\s*\$\]\s*>=\s*5\.005\s*\?\s*(?:\#\#\s*\QAdd these new keywords supported since 5.005\E\s*)?
+  \s+\(\s*ABSTRACT(?:_FROM)?\s*=>\s*'([^'\n]+)',\s*(?:\#\s*\Qretrieve abstract from module\E\s*)?
+  \s+AUTHOR\s*=>\s*'([^'\n]+)'
+  \s*\)\s*\Q: ()\E\s*\),\s+
+  /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
+
+  $content=~s/
+          ^\s*\(\s*\$ ExtUtils::MakeMaker::VERSION\s+
+          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E \s*
+          ( [^()]+? ) \s*
+          \)\s*\:\s*\(\)\s*\),
+  /$space$1/msxg;
+
+  $content=~s/
+          \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
+          ( [^()]+? ) \s+
+          \)\s*\:\s*\(\)\s*\),
+  /$1/sxg;
+  return $content;
 }
 
 1; # End of App::EUMM::Upgrade
