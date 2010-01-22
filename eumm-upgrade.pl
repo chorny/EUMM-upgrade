@@ -28,15 +28,19 @@ sub process_file {
   my $content=shift;
   my $indentation_type = Text::FindIndent->parse($content,first_level_indent_only=>1);
   my $space_to_use;
+  my $indent_str;
   if ($indentation_type =~ /^[sm](\d+)/) {
     print "Indentation with $1 spaces\n";
     $space_to_use=$1;
+    $indent_str=' 'x$space_to_use;
   } elsif ($indentation_type =~ /^t(\d+)/) {
     print "Indentation with tabs, a tab should indent by $1 characters\n";
     $space_to_use=0;
+    $indent_str="\t";
   } else {
     print "Indentation unknown, will use 4 spaces\n";
     $space_to_use=4;
+    $indent_str=' 'x4;
   }
 
   sub apply_indent {
@@ -46,16 +50,12 @@ sub process_file {
     sub _do_replace {
       my $spaces=shift;
       my $i_from=shift;
-      my $i_to=shift;
+      my $indent_str=shift;
       my $len=length($spaces);
       my $l1=int($len/$i_from);
-      if ($i_to==0) {
-        return "\t"x$l1;
-      } else {
-        return " " x ($l1*$i_to);
-      }
+      return $indent_str x $l1;
     }
-    $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$i_to)/emg;
+    $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$indent_str)/emg;
     return $content;
   }
 
