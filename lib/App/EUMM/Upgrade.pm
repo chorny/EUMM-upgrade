@@ -117,19 +117,56 @@ sub _unindent_t {
 sub _unindent {
   my $space_string_to_set=shift;
   my $text=shift;
-  my @lines=split /[\r\n]+/s,$text;
+  print "#'$space_string_to_set','$text'\n";
+  my @lines=split /(?<=[\x0A\x0D])/s,$text;
   use List::Util qw/min/;
   my $minspace=min(map {_indent_space_number($_)} @lines);
   my $s1=_indent_space_number($space_string_to_set);
-  die if $s1 < $minspace;
+  die "$s1 > $minspace" if $s1 > $minspace;
   return $text if $s1==$minspace;
-  if (grep { $_ !~ /^$space_string_to_set/ } @lines) {
-    die "Text does not start with removal line";
-  }
+  #if (grep { $_ !~ /^$space_string_to_set/ } @lines) {
+    
+  #}
   #my $space_str
+  my $line;
   foreach my $l (@lines) {
-    $l=~s///;
+    next unless $l;
+    unless ($l=~s/^$space_string_to_set//) {
+      die "Text (line '$l') does not start with removal line ($space_string_to_set)";
+    }
+    next unless $l;
+    if ($l=~m/^(\s+)/) {
+      my $space=$1;
+      if (!defined $line) {
+        $line=$space;
+        next;
+      } else {
+        if ($space=~/^$line/) {
+          next;
+        } elsif ($line=~/^$space/) {
+          $line=$space;
+          if ($line eq '') {
+            warn("line set to '' on line '$l'");
+          }
+        } else {
+          die "Cannot find common start, on line '$l'";
+        }
+      }
+    } else {
+      return $text;
+    }
   }
+  if (!$line) {
+    die "Cannot find common start";
+  }
+  foreach my $l (@lines) {
+    next unless $l;
+    unless ($l=~s/^$line//) {
+      die "Text (line '$l') does not start with calculated removal line ($space_string_to_set)";
+    }
+    $l="$space_string_to_set$l";
+  }
+  return (join("",@lines)."");
 
   #foreach
   #$text=~s/^(\s+)(\S)/_unindent_t(qq{$1},qq{$space_string_to_set}).qq{$2}/egm;
@@ -150,11 +187,12 @@ sub remove_conditional_code {
   /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
   $content=~s/
-          ^\s*\(\s*\$ ExtUtils::MakeMaker::VERSION\s+
-          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E \s*
-          ( [^()]+? ) \s*
+          ^(\s*)\(\s*\$ ExtUtils::MakeMaker::VERSION\s+
+          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E\s*[\n\r]
+          ( [ \t]*[^()]+? ) #main text, should not contain ()
+           \s*
           \)\s*\:\s*\(\)\s*\),
-  /$space$1/msxg;
+  /_unindent($1,$2)/msxge;
 
   $content=~s/
           \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+

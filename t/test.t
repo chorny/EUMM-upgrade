@@ -3,8 +3,31 @@
 use strict;
 use warnings;
 use App::EUMM::Upgrade;
-use Test::More tests => 3;
+use Test::More; # tests => 4
 
+{
+my $text=<<'EOT';
+		MIN_PERL_VERSION => 5.004,
+		META_MERGE => {
+			resources => {
+				repository => '',
+			},
+		},
+EOT
+
+my $text1=<<'EOT';
+	MIN_PERL_VERSION => 5.004,
+	META_MERGE => {
+		resources => {
+			repository => '',
+		},
+	},
+EOT
+is(App::EUMM::Upgrade::_unindent("\t",$text),$text1);
+
+}
+
+=for cmt
 {
 my $text=<<'EOT';
 WriteMakefile(
@@ -39,6 +62,7 @@ is(App::EUMM::Upgrade::remove_conditional_code($text,"\t"),$text1);
 
 }
 
+
 {
 my $text=<<'EOT';
 	($ExtUtils::MakeMaker::VERSION ge '6.48' ? (
@@ -62,3 +86,6 @@ EOT
 is(App::EUMM::Upgrade::remove_conditional_code($text,"\t"),$text1);
 
 }
+=cut
+
+done_testing;
