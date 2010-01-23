@@ -16,7 +16,7 @@ my $builder = Module::Build->new(
         'perl' => 5.006,
     },
     build_requires => {
-        'Test::More' => 0,
+        'Test::More' => 0.88,
     },
     script_files => [
         'eumm-upgrade.pl',

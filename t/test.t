@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use App::EUMM::Upgrade;
-use Test::More; # tests => 4
+use Test::More 0.88; # tests => 4
 
 {
 my $text=<<'EOT';
@@ -27,7 +27,6 @@ is(App::EUMM::Upgrade::_unindent("\t",$text),$text1);
 
 }
 
-=for cmt
 {
 my $text=<<'EOT';
 WriteMakefile(
@@ -86,6 +85,8 @@ EOT
 is(App::EUMM::Upgrade::remove_conditional_code($text,"\t"),$text1);
 
 }
+
+=for cmt
 =cut
 
 done_testing;
