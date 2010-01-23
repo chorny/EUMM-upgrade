@@ -152,7 +152,7 @@ $res
 EOT
   }
 
-  if ($content !~ /\bBUILD_REQUIRES\s*=>\s*\{/) {
+  if ($content !~ /\bBUILD_REQUIRES['"]?\s*=>\s*\{/) {
     push @param,"    #BUILD_REQUIRES => {\n"."    #},\n";
   }
   
