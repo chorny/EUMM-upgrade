@@ -100,7 +100,8 @@ Copyright 2009 Alexandr Ciornii.
 GPL v3
 
 =cut
-
+use Exporter 'import';
+our @EXPORT=qw/remove_conditional_code/;
 sub _indent_space_number {
   my $str=shift;
   $str=~/^(\s+)/ or return 0;
@@ -122,7 +123,10 @@ sub _unindent {
   my $s1=_indent_space_number($space_string_to_set);
   die if $s1 < $minspace;
   return $text if $s1==$minspace;
-  my $pace_str
+  if (grep { $_ !~ /^$space_string_to_set/ } @lines) {
+    die "Text does not start with removal line";
+  }
+  #my $space_str
   foreach my $l (@lines) {
     $l=~s///;
   }
