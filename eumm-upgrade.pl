@@ -84,28 +84,9 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.21. Added by eumm-
 }
 EOT
   my $space=' 'x4;
-  $content=~s/
-  \(\s*\$\]\s*>=\s*5\.005\s*\?\s*(?:\#\#\s*\QAdd these new keywords supported since 5.005\E\s*)?
-  \s+\(\s*ABSTRACT(?:_FROM)?\s*=>\s*'([^'\n]+)',\s*(?:\#\s*\Qretrieve abstract from module\E\s*)?
-  \s+AUTHOR\s*=>\s*'([^'\n]+)'
-  \s*\)\s*\Q: ()\E\s*\),\s+
-  /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
-
-  $content=~s/
-          \(\s*\$ ExtUtils::MakeMaker::VERSION\s+
-          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E \s*
-          ( [^()]+? ) \s*
-          \)\s*\:\s*\(\)\s*\),
-  /$space$1/sxg;
-
-  $content=~s/(WriteMakefile\()(\S)/$1\n$space$2/;
-
-  $content=~s/
-          \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
-          ( [^()]+? ) \s+
-          \)\s*\:\s*\(\)\s*\),
-  /$1/sxg;
-
+  $content=~s/(WriteMakefile\()(\S)/$1\n$indent_str$2/;
+  use App::EUMM::Upgrade;
+  $content=remove_conditional_code($content,$indent_str);
   my @param;
 
   my @resourses;

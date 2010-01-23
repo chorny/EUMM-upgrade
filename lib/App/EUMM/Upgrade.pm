@@ -146,7 +146,7 @@ sub _unindent {
         } elsif ($line=~/^$space/) {
           $line=$space;
           if ($line eq '') {
-            warn("line set to '' on line '$l'");
+            #warn("line set to '' on line '$l'");
           }
         } else {
           die "Cannot find common start, on line '$l'";
