@@ -122,15 +122,21 @@ sub _unindent {
   use List::Util qw/min/;
   my $minspace=min(map {_indent_space_number($_)} @lines);
   my $s1=_indent_space_number($space_string_to_set);
-  die "$s1 > $minspace" if $s1 > $minspace;
+  #die "$s1 > $minspace" if $s1 > $minspace;
   return $text if $s1==$minspace;
   #if (grep { $_ !~ /^$space_string_to_set/ } @lines) {
     
   #}
   #my $space_str
   my $line;
+  my $i=0;
   foreach my $l (@lines) {
     next unless $l;
+    if ($i==0) {
+      $l =~ s/^\s+//;
+      $i++;
+      next;
+    }
     unless ($l=~s/^$space_string_to_set//) {
       die "Text (line '$l') does not start with removal line ($space_string_to_set)";
     }
@@ -156,11 +162,17 @@ sub _unindent {
       return $text;
     }
   }
-  if (!$line) {
+  if (!$line and $i>1) {
     die "Cannot find common start";
   }
+  $i=0;
   foreach my $l (@lines) {
     next unless $l;
+    if ($i==0) {
+      $l="$space_string_to_set$l";
+      $i++;
+      next;
+    }
     unless ($l=~s/^$line//) {
       die "Text (line '$l') does not start with calculated removal line ($space_string_to_set)";
     }
@@ -186,9 +198,11 @@ sub remove_conditional_code {
   \s*\)\s*\Q: ()\E\s*\),\s+
   /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
+  my $eumm_version_check=qr/\$ ExtUtils::MakeMaker::VERSION\s+
+          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)/xs;
   $content=~s/
-          ^(\s*)\(\s*\$ ExtUtils::MakeMaker::VERSION\s+
-          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)\?\s+\(\E\s*[\n\r]
+          ^(\s*)\(\s* $eumm_version_check
+          \?\s+\(\s* #[\n\r]
           ( [ \t]*[^()]+? ) #main text, should not contain ()
            \s*
           \)\s*\:\s*\(\)\s*\),
