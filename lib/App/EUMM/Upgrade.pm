@@ -199,7 +199,9 @@ sub remove_conditional_code {
   /ABSTRACT_FROM => '$1',\n${space}AUTHOR => '$2',\n/sx;
 
   my $eumm_version_check=qr/\$ ExtUtils::MakeMaker::VERSION\s+
-          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+)/xs;
+          (?:ge\s+' [\d\._]+ ' \s* | >=?\s*[\d\._]+\s+) |
+          eval\s*{\s*ExtUtils::MakeMaker->VERSION\([\d\._]+\)\s*}\s*
+          /xs;
   $content=~s/
           ^(\s*)\(\s* $eumm_version_check
           \?\s+\(\s* #[\n\r]
