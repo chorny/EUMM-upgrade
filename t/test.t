@@ -102,6 +102,19 @@ is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
 }
 
 
+{
+my $text=<<'EOT';
+  (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'perl') : ()),
+EOT
+
+my $text1=<<'EOT';
+  LICENSE => 'perl'
+EOT
+is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
+
+}
+
+
 =for cmt
 =cut
 
