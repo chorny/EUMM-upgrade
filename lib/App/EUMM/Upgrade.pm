@@ -211,10 +211,12 @@ sub remove_conditional_code {
   /_unindent($1,$2)/msxge;
 
   $content=~s/
-          \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \Q? (\E \s+
-          ( [^()]+? ) \s+
+          \(\s*\$\]\s* \Q>=\E \s* 5[\d\._]+ \s* \?\s*\( \s*
+          ( [^()]+? ) ,? \s*
           \)\s*\:\s*\(\)\s*\),
-  /$1/sxg;
+  /$1,/sxg;
+#    ($] >= 5.005 ?
+#       (AUTHOR         => 'Stephen Hardisty <moowahaha@hotmail.com>') : ()),
   return $content;
 }
 
