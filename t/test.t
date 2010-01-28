@@ -118,16 +118,28 @@ is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
 {
 my $text=<<'EOT';
     ($] >= 5.005 ?
-       (AUTHOR         => 'Stephen Hardisty <moowahaha@hotmail.com>') : ()),
+       (AUTHOR         => '***') : ()),
 EOT
 
 my $text1=<<'EOT';
-    AUTHOR         => 'Stephen Hardisty <moowahaha@hotmail.com>',
+    AUTHOR         => '***',
 EOT
 is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
 
 }
 
+{
+my $text=<<'EOT';
+    ($] >= 5.005 ?
+       (AUTHOR         => '***',) : ()),
+EOT
+
+my $text1=<<'EOT';
+    AUTHOR         => '***',
+EOT
+is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
+
+}
 
 =for cmt
 =cut
