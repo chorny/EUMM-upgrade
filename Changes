@@ -3,6 +3,8 @@ Revision history for App-EUMM-Upgrade
         Better reindentation when outer block is removed
         Better detection of exisiting BUILD_REQUIRES
         Better detection of version-checking constructs
+        Better search for 'Perl' license
+        Scan 'author' section for license
 
 0.22    2010-01-11
         Better detection of version-checking constructs

@@ -226,13 +226,24 @@ sub _extract_license {
 			(?:licen[cs]e|licensing|copyrights?|legal)\b
 			.*?
 		)
-		(=head\\d.*|=cut.*|)
+		(=head \d.*|=cut.*|)
+		\z
+	/ixms
+	 or #search first in 'license', then in 'author' section
+		$_[0] =~ m/
+		(
+			=head \d \s+
+			author\b
+			.*?
+		)
+		(=head \d.*|=cut.*|)
 		\z
 	/ixms ) {
 		my $license_text = $1;
 		my @phrases      = (
 			'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
 			'under the terms of (?:perl|the perl programming language) itself' => 'perl', 1,
+			'Artistic and GPL'                   => 'perl',        1,
 			'GNU general public license'         => 'gpl',         1,
 			'GNU public license'                 => 'gpl',         1,
 			'GNU lesser general public license'  => 'lgpl',        1,
