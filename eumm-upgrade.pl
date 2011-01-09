@@ -125,6 +125,8 @@ EOT
         my $l=Module::Install::Metadata::_extract_license($main_file_content);
         if ($l) {
           push @param,"    LICENSE => '$l',\n";
+        } else {
+          print "license not found\n";
         }
       }
       if ($content !~ /\bMIN_PERL_VERSION['"]?\s*=>\s*['"]?\d/) {
