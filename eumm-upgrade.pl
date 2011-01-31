@@ -11,6 +11,7 @@ use File::Slurp;
 #require Module::Install::Repository;
 #require Module::Install::Metadata;
 use Text::FindIndent 0.08;
+use Perl::Meta;
 
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
@@ -113,7 +114,7 @@ EOT
     if (!$main_file_content) {
       print "Cannot open $main_file\n";
     } else {
-      my @links=Module::Install::Metadata::_extract_bugtracker($main_file_content);
+      my @links=Perl::Meta::_extract_bugtracker($main_file_content);
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
@@ -122,7 +123,7 @@ EOT
         print "Too many links to bugtrackers found in $main_file\n";
       }
       if ($content !~ /\bLICENSE\s*=>\s*['"]/ and $content !~ /'LICENSE'\s*=>\s*['"]/) {
-        my $l=Module::Install::Metadata::_extract_license($main_file_content);
+        my $l=Perl::Meta::_extract_license($main_file_content);
         if ($l) {
           push @param,"    LICENSE => '$l',\n";
         } else {
@@ -130,8 +131,8 @@ EOT
         }
       }
       if ($content !~ /\bMIN_PERL_VERSION['"]?\s*=>\s*['"]?\d/) {
-        my $version=Module::Install::Metadata::_extract_perl_version($main_file_content) ||
-          Module::Install::Metadata::_extract_perl_version($content);
+        my $version=Perl::Meta::_extract_perl_version($main_file_content) ||
+          Perl::Meta::_extract_perl_version($content);
         if ($version) {
           push @param,"    MIN_PERL_VERSION => '$version',\n";
         }
@@ -140,7 +141,7 @@ EOT
   } else {
     print "VERSION_FROM not found\n";
     if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"\d]/) {
-      my $version=Module::Install::Metadata::_extract_perl_version($content);
+      my $version=Perl::Meta::_extract_perl_version($content);
       if ($version) {
         push @param,"    MIN_PERL_VERSION => '$version',\n";
       }
@@ -201,94 +202,6 @@ it (set 'c-basic-offset' to your value):
 
 (c) Alexandr Ciornii
 =cut
-
-package Module::Install::Metadata;
-#by Adam Kennedy and Alexandr Ciornii
-#See Module::Install for copyright
-
-sub _extract_perl_version {
-	if (
-		$_[0] =~ m/
-		^\s*
-		(?:use|require) \s*
-		v?
-		([\d_\.]+)
-		\s* ;
-		/ixms
-	) {
-		my $perl_version = $1;
-		$perl_version =~ s{_}{}g;
-		return $perl_version;
-	} else {
-		return;
-	}
-}
-
-sub _extract_license {
-	if (
-		$_[0] =~ m/
-		(
-			=head \d \s+
-			(?:licen[cs]e|licensing|copyrights?|legal)\b
-			.*?
-		)
-		(=head \d.*|=cut.*|)
-		\z
-	/ixms
-	 or #search first in 'license', then in 'author' section
-		$_[0] =~ m/
-		(
-			=head \d \s+
-			author\b
-			.*?
-		)
-		(=head \d.*|=cut.*|)
-		\z
-	/ixms ) {
-		my $license_text = $1;
-		my @phrases      = (
-			'under the same (?:terms|license) as (?:perl|the perl programming language)' => 'perl', 1,
-			'under the terms of (?:perl|the perl programming language) itself' => 'perl', 1,
-			'Artistic and GPL'                   => 'perl',        1,
-			'GNU general public license'         => 'gpl',         1,
-			'GNU public license'                 => 'gpl',         1,
-			'GNU lesser general public license'  => 'lgpl',        1,
-			'GNU lesser public license'          => 'lgpl',        1,
-			'GNU library general public license' => 'lgpl',        1,
-			'GNU library public license'         => 'lgpl',        1,
-			'BSD license'                        => 'bsd',         1,
-			'Artistic license'                   => 'artistic',    1,
-			'GPL'                                => 'gpl',         1,
-			'LGPL'                               => 'lgpl',        1,
-			'BSD'                                => 'bsd',         1,
-			'Artistic'                           => 'artistic',    1,
-			'MIT'                                => 'mit',         1,
-			'proprietary'                        => 'proprietary', 0,
-		);
-		while ( my ($pattern, $license, $osi) = splice(@phrases, 0, 3) ) {
-			$pattern =~ s#\s+#\\s+#g;
-			if ( $license_text =~ /\b$pattern\b/i ) {
-			        return $license;
-			}
-		}
-	} else {
-	        return;
-	}
-}
-
-sub _extract_bugtracker {
-	my @links   = $_[0] =~ m#L<(
-	 https?\Q://rt.cpan.org/\E[^>]+|
-	 https?\Q://github.com/\E[\w_]+/[\w_]+/issues|
-	 https?\Q://code.google.com/p/\E[\w_\-]+/issues/list
-	 )>#gx;
-	my %links;
-	@links{@links}=();
-	@links=keys %links;
-	return @links;
-}
-
-1;
 
 package Module::Install::Repository;
 #by Tatsuhiko Miyagawa
