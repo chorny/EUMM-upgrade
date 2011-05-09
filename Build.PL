@@ -11,7 +11,7 @@ my $builder = Module::Build->new(
     requires => {
         'File::Slurp' => 0,
         'Text::FindIndent' => 0.08,
-        'Github::Fork::Parent' => 0,
+        'Github::Fork::Parent' => 0.11,
         'ExtUtils::MakeMaker' => 6.56,
         'perl' => 5.006,
     },
