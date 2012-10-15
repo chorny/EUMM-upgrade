@@ -114,7 +114,7 @@ EOT
     if (!$main_file_content) {
       print "Cannot open $main_file\n";
     } else {
-      my @links=Perl::Meta::_extract_bugtracker($main_file_content);
+      my @links=Perl::Meta::extract_bugtracker($main_file_content);
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
@@ -123,7 +123,7 @@ EOT
         print "Too many links to bugtrackers found in $main_file\n";
       }
       if ($content !~ /\bLICENSE\s*=>\s*['"]/ and $content !~ /'LICENSE'\s*=>\s*['"]/) {
-        my $l=Perl::Meta::_extract_license($main_file_content);
+        my $l=Perl::Meta::extract_license($main_file_content);
         if ($l) {
           push @param,"    LICENSE => '$l',\n";
         } else {
@@ -131,8 +131,8 @@ EOT
         }
       }
       if ($content !~ /\bMIN_PERL_VERSION['"]?\s*=>\s*['"]?\d/) {
-        my $version=Perl::Meta::_extract_perl_version($main_file_content) ||
-          Perl::Meta::_extract_perl_version($content);
+        my $version=Perl::Meta::extract_perl_version($main_file_content) ||
+          Perl::Meta::extract_perl_version($content);
         if ($version) {
           push @param,"    MIN_PERL_VERSION => '$version',\n";
         }
@@ -141,7 +141,7 @@ EOT
   } else {
     print "VERSION_FROM not found\n";
     if ($content !~ /\bMIN_PERL_VERSION\s*=>\s*['"\d]/) {
-      my $version=Perl::Meta::_extract_perl_version($content);
+      my $version=Perl::Meta::extract_perl_version($content);
       if ($version) {
         push @param,"    MIN_PERL_VERSION => '$version',\n";
       }
