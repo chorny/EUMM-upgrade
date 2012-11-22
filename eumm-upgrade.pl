@@ -12,6 +12,7 @@ use File::Slurp;
 #require Module::Install::Metadata;
 use Text::FindIndent 0.08;
 use Perl::Meta;
+use App::EUMM::Upgrade;
 
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
@@ -90,7 +91,6 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
 EOT
   my $space=' 'x4;
   $content=~s/(WriteMakefile\()(\S)/$1\n$indent_str$2/;
-  use App::EUMM::Upgrade;
   $content=remove_conditional_code($content,$indent_str);
   my @param;
 
@@ -169,11 +169,18 @@ EOT
     $param=apply_indent($param,4,$space_to_use);
     $param=~s/\s+$/\n/s;
   }
+  my $text2replace = 'WriteMakefile\(';
+  #if ($content =~ /WriteMakefile\(\s*(\%\w+)\s*\);/) {
+  #  my $var_params = $1;
+  #  $text2replace = qr/$var_params\s*=\s*\((?:\s|\n)*/;
+  #}
+  
+  #$content=~s/($text2replace)(\S)/$1\n$indent_str$2/;
   $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
   #$content=~s/[\r\n]+$//s;
   $compat_layer="\n\n".apply_indent($compat_layer,4,$space_to_use);
-  $content=~s/(__DATA__ | $ )/$compat_layer$1/sx;
+  $content=~s/(package\s+MY; | __DATA__ | $ )/$compat_layer$1/sx;
   # |
   #
   return $content;
