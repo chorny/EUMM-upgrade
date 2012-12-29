@@ -8,6 +8,7 @@ Revision history for App-EUMM-Upgrade
         Scan 'author' section for license
         Support for arrayref in 'AUTHOR'
         Check for "package MY"
+        Support TEST_REQUIRES
 
 0.22    2010-01-11
         Better detection of version-checking constructs
