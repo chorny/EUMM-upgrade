@@ -86,9 +86,6 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
     delete $params{META_MERGE} if $eumm_version < 6.46;
     delete $params{META_ADD} if $eumm_version < 6.46;
     delete $params{LICENSE} if $eumm_version < 6.31;
-    delete $params{AUTHOR} if $] < 5.005;
-    delete $params{ABSTRACT_FROM} if $] < 5.005;
-    delete $params{BINARY_LOCATION} if $] < 5.005;
 
     WriteMakefile(%params);
 }
