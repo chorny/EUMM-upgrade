@@ -114,7 +114,7 @@ EOT
     if (!$main_file_content) {
       print "Cannot open $main_file\n";
     } else {
-      my @links=Perl::Meta::_extract_bugtracker($main_file_content);
+      my @links=Perl::Meta::extract_bugtracker($main_file_content);
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
