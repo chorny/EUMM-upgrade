@@ -44,20 +44,23 @@ sub process_file {
     $indent_str=' 'x4;
   }
 
-  sub apply_indent {
-    my $content=shift;
-    my $i_from=shift || die;
-    my $i_to=shift;
-    sub _do_replace {
-      my $spaces=shift;
-      my $i_from=shift;
-      my $indent_str=shift;
-      my $len=length($spaces);
-      my $l1=int($len/$i_from);
-      return $indent_str x $l1;
-    }
+  {
+    no strict 'refs';
+    *{__PACKAGE__.'::apply_indent'} = sub {
+      my $content=shift;
+      my $i_from=shift || die;
+      my $i_to=shift;
+      *{__PACKAGE__.'::_do_replace'} = sub {
+        my $spaces=shift;
+        my $i_from=shift;
+        my $indent_str=shift;
+        my $len=length($spaces);
+        my $l1=int($len/$i_from);
+        return $indent_str x $l1;
+      };
     $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$indent_str)/emg;
     return $content;
+  };
   }
 
   my $compat_layer=<<'EOT';
