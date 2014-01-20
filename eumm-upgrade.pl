@@ -44,20 +44,23 @@ sub process_file {
     $indent_str=' 'x4;
   }
 
-  sub apply_indent {
-    my $content=shift;
-    my $i_from=shift || die;
-    my $i_to=shift;
-    sub _do_replace {
-      my $spaces=shift;
-      my $i_from=shift;
-      my $indent_str=shift;
-      my $len=length($spaces);
-      my $l1=int($len/$i_from);
-      return $indent_str x $l1;
-    }
+  {
+    no strict 'refs';
+    *{__PACKAGE__.'::apply_indent'} = sub {
+      my $content=shift;
+      my $i_from=shift || die;
+      my $i_to=shift;
+      *{__PACKAGE__.'::_do_replace'} = sub {
+        my $spaces=shift;
+        my $i_from=shift;
+        my $indent_str=shift;
+        my $len=length($spaces);
+        my $l1=int($len/$i_from);
+        return $indent_str x $l1;
+      };
     $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$indent_str)/emg;
     return $content;
+  };
   }
 
   my $compat_layer=<<'EOT';
@@ -70,6 +73,11 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
     if ($params{AUTHOR} and ref($params{AUTHOR}) eq 'ARRAY' and $eumm_version < 6.5705) {
         $params{META_ADD}->{author}=$params{AUTHOR};
         $params{AUTHOR}=join(', ',@{$params{AUTHOR}});
+    }
+    if ($params{TEST_REQUIRES} and $eumm_version < 6.64) {
+        $params{BUILD_REQUIRES}={ %{$params{BUILD_REQUIRES} || {}},
+            %{$params{TEST_REQUIRES}} };
+        delete $params{TEST_REQUIRES};
     }
     if ($params{BUILD_REQUIRES} and $eumm_version < 6.5503) {
         #EUMM 6.5502 has problems with BUILD_REQUIRES
@@ -114,7 +122,7 @@ EOT
     if (!$main_file_content) {
       print "Cannot open $main_file\n";
     } else {
-      my @links=Perl::Meta::_extract_bugtracker($main_file_content);
+      my @links=Perl::Meta::extract_bugtracker($main_file_content);
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
@@ -159,8 +167,16 @@ $res
 EOT
   }
 
+  if ($content !~ /\bCONFIGURE_REQUIRES['"]?\s*=>\s*\{/) {
+    push @param,"    #CONFIGURE_REQUIRES => {\n"."    #},\n";
+  }
+ 
   if ($content !~ /\bBUILD_REQUIRES['"]?\s*=>\s*\{/) {
     push @param,"    #BUILD_REQUIRES => {\n"."    #},\n";
+  }
+
+  if ($content !~ /\bTEST_REQUIRES['"]?\s*=>\s*\{/) {
+    push @param,"    #TEST_REQUIRES => {\n"."    #},\n";
   }
   
   my $param='';

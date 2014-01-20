@@ -19,6 +19,6 @@ cover_db
 Build.bat
 *.tmp
 
-META.yml
-MYMETA.yml
+META.*
+MYMETA.*
 test.cmd

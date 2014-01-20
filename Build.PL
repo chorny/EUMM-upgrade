@@ -13,6 +13,7 @@ my $builder = Module::Build->new(
         'Text::FindIndent' => 0.08,
         'Github::Fork::Parent' => 0,
         'ExtUtils::MakeMaker' => 6.56,
+        'Perl::Meta' => 0,
         'perl' => 5.006,
     },
     build_requires => {
