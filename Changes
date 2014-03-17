@@ -9,6 +9,7 @@ Revision history for App-EUMM-Upgrade
         Support for arrayref in 'AUTHOR'
         Check for "package MY"
         Support TEST_REQUIRES
+        Don't write compatibility code for perl < 5.005
 
 0.22    2010-01-11
         Better detection of version-checking constructs

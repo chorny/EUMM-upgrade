@@ -9,11 +9,11 @@ App::EUMM::Upgrade - Perl tool to upgrade ExtUtils::MakeMaker-based Makefile.PL
 
 =head1 VERSION
 
-Version 0.22
+Version 0.24
 
 =cut
 
-our $VERSION = '0.22_01';
+our $VERSION = '0.23_01';
 
 
 =head1 SYNOPSIS
