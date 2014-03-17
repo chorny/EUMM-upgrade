@@ -109,7 +109,7 @@ EOT
     push @resourses,"${space}${space}${space}#repository => 'URL to repository here',";
   }
 
-  if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/) {
+  if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/ || $content=~/\bVERSION_FROM\s*=>\s*q\[?([^\]\n]+)\]/) {
     my $main_file=$1;
     my $main_file_content=eval { read_file($1) };
     if (!$main_file_content) {
