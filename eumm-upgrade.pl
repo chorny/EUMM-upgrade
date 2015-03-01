@@ -116,6 +116,25 @@ EOT
       print "Cannot open $main_file\n";
     } else {
       my @links=Perl::Meta::extract_bugtracker($main_file_content);
+      if (@links==2) {
+        my $remove;
+        my $dist;
+        foreach my $i (0.. $#links) {
+          my $dist1;
+          if ($links[$i] =~ m#^\Qhttp://rt.cpan.org/NoAuth/ReportBug.html?Queue=\E(\w+)#) {
+            $remove = $i;
+            $dist1 = $1;
+          } elsif ($links[$i] =~ m#^\Qhttp://rt.cpan.org/NoAuth/Bugs.html?Dist=\E(\w+)#) {
+            $dist1 = $1;
+          } else {
+            die "unknown bugtraker type $links[$i]";
+          }
+          if ($dist and $dist1 ne $dist) {
+            die;
+          }
+        }
+        splice(@links,$remove,1) if defined $remove;
+      }
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
