@@ -32,6 +32,7 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup      => [ 'App-EUMM-Upgrade-*' ],
     create_makefile_pl => 'traditional',
+    auto_configure_requires => 0,
 );
 
 $builder->create_build_script();

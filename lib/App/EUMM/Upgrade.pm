@@ -13,7 +13,7 @@ Version 0.24
 
 =cut
 
-our $VERSION = '0.23_01';
+our $VERSION = '0.24';
 
 
 =head1 SYNOPSIS
@@ -95,7 +95,7 @@ L<http://search.cpan.org/dist/App-EUMM-Upgrade/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 Alexandr Ciornii.
+Copyright 2009-2015 Alexandr Ciornii.
 
 GPL v3
 
