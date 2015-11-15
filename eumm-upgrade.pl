@@ -141,7 +141,7 @@ EOT
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
-        push @resourses,"${space}${space}${space}bugtracker => '$bt',";
+        push @resourses, "${space}${space}${space}bugtracker => '$bt',";
       } elsif (@links>1) {
         print "Too many links to bugtrackers found in $main_file\n";
       }
@@ -173,6 +173,7 @@ EOT
 
   if (@resourses and $content !~ /\bMETA_MERGE\s*=>\s*\{/) {
     my $res=join("\n",@resourses);
+    #'meta-spec' => { version => 2 },
     push @param,<<EOT;
     META_MERGE => {
         resources => {
@@ -182,8 +183,8 @@ $res
 EOT
   }
 
-  if ($content !~ /\bBUILD_REQUIRES['"]?\s*=>\s*\{/) {
-    push @param,"    #BUILD_REQUIRES => {\n"."    #},\n";
+  if ($content !~ /\bTEST_REQUIRES['"]?\s*=>\s*\{/) {
+    push @param,"    #TEST_REQUIRES => {\n"."    #},\n";
   }
   
   my $param='';
