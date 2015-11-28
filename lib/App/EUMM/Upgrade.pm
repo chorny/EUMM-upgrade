@@ -101,7 +101,7 @@ GPL v3
 
 =cut
 use Exporter 'import';
-our @EXPORT=qw/remove_conditional_code/;
+our @EXPORT=qw/remove_conditional_code find_repo/;
 sub _indent_space_number {
   my $str=shift;
   $str=~/^(\s+)/ or return 0;
@@ -218,6 +218,80 @@ sub remove_conditional_code {
 #    ($] >= 5.005 ?
 #       (AUTHOR         => 'Stephen Hardisty <moowahaha@hotmail.com>') : ()),
   return $content;
+}
+
+
+
+
+#_find_repo copied from Module::Install::Repository;
+#by Tatsuhiko Miyagawa
+#See Module::Install::Repository for copyright
+
+sub _execute {
+    my ($command) = @_;
+    local $ENV{LC_ALL} = "C";
+    `$command`;
+}
+
+sub find_repo {
+  return _find_repo(\&_execute);
+}
+
+sub _find_repo {
+    my ($execute) = @_;
+
+    if (-e ".git") {
+        # TODO support remote besides 'origin'?
+        my $git_url =  '';
+        if ($execute->('git remote show -n origin') =~ /URL: (.*)$/m) {
+            # XXX Make it public clone URL, but this only works with github
+            $git_url = $1;
+            $git_url =~ s![\w\-]+\@([^:]+):!git://$1/!;
+            return $git_url;
+        } elsif ($execute->('git svn info') =~ /URL: (.*)$/m) {
+            $git_url = $1;
+        }
+        return '' if $git_url =~ /\A\w+\z/;# invalid github remote might come back with just the remote name
+        return $git_url;
+    } elsif (-e ".svn") {
+        if ($execute->('svn info') =~ /URL: (.*)$/m) {
+            return $1;
+        }
+    } elsif (-e "_darcs") {
+        # defaultrepo is better, but that is more likely to be ssh, not http
+        if (my $query_repo = `darcs query repo`) {
+            if ($query_repo =~ m!Default Remote: (http://.+)!) {
+                return $1;
+            }
+        }
+
+        open my $handle, '<', '_darcs/prefs/repos' or return;
+        while (<$handle>) {
+            chomp;
+            return $_ if m!^http://!;
+        }
+    } elsif (-e ".hg") {
+        if ($execute->('hg paths') =~ /default = (.*)$/m) {
+            my $mercurial_url = $1;
+            $mercurial_url =~ s!^ssh://hg\@(bitbucket\.org/)!https://$1!;
+            return $mercurial_url;
+        }
+    } elsif ($ENV{HOME} && -e "$ENV{HOME}/.svk") {
+        # Is there an explicit way to check if it's an svk checkout?
+        my $svk_info = `svk info` or return;
+        SVK_INFO: {
+            if ($svk_info =~ /Mirrored From: (.*), Rev\./) {
+                return $1;
+            }
+
+            if ($svk_info =~ m!Merged From: (/mirror/.*), Rev\.!) {
+                $svk_info = `svk info /$1` or return;
+                redo SVK_INFO;
+            }
+        }
+
+        return;
+    }
 }
 
 1; # End of App::EUMM::Upgrade
