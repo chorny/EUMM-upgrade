@@ -13,6 +13,11 @@ use File::Slurp;
 use Text::FindIndent 0.08;
 use Perl::Meta;
 use App::EUMM::Upgrade;
+use Getopt::Long;
+
+my $noparent = 0;
+GetOptions("noparent" => \$noparent) or die("Error in command line arguments\n");
+print "will not search for github parent repository\n" if $noparent;
 
 my $content=read_file('Makefile.PL') or die "Cannot find 'Makefile.PL'";
 if ($content =~ /use inc::Module::Install/) {
@@ -102,11 +107,12 @@ EOT
   my $repo = find_repo();
   if ($repo and $repo=~m#://#) {
     print "Repository found: $repo\n";
-    eval {
-      require Github::Fork::Parent;
-      $repo=Github::Fork::Parent::github_parent($repo);
-
-    };
+    unless ($noparent) {
+      eval {
+        require Github::Fork::Parent;
+        $repo=Github::Fork::Parent::github_parent($repo);
+      };
+    }
     push @resourses,"${space}${space}${space}repository => '$repo',";
   } else {
     push @resourses,"${space}${space}${space}#repository => 'URL to repository here',";
