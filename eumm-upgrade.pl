@@ -103,19 +103,45 @@ EOT
   $content=remove_conditional_code($content,$indent_str);
   my @param;
 
+  my $meta_modify_persent = 0;
+  my $meta_modify_ver = 0;
+  if ($content =~ m#META_MERGE['" ]\s*=>#) {
+    $meta_modify_persent = 1;
+    if ($content =~ m#['"]meta-spec['"]\s*=>\s*{\s*version\s*=>\s*2\s*}#s) {
+      $meta_modify_ver = 2;
+    }
+  }
+
   my @resourses;
-  my $repo = find_repo();
+  my ($type, $repo) = find_repo();
+  my $repo_string;
   if ($repo and $repo=~m#://#) {
-    print "Repository found: $repo\n";
+    $repo = convert_url_to_public($repo);
+    print "Repository found: $repo. Check that this is public URL.\n";
     unless ($noparent) {
       eval {
         require Github::Fork::Parent;
         $repo=Github::Fork::Parent::github_parent($repo);
       };
     }
-    push @resourses,"${space}${space}${space}repository => '$repo',";
+    $repo_string = "repository => '$repo',";
   } else {
-    push @resourses,"${space}${space}${space}#repository => 'URL to repository here',";
+    $repo_string = "#repository => 'URL to repository here',";
+  }
+  my $web_url = convert_url_to_web($repo);
+  if ($meta_modify_ver == 2 || (!$meta_modify_persent && $web_url))  {
+    $meta_modify_ver = 2;
+    push @resourses, "${space}${space}${space}repository => {";
+    if ($repo) {
+      push @resourses, "${space}${space}${space}${space}type => '$type',";
+      push @resourses, "${space}${space}${space}${space}url => '$repo',";
+      push @resourses, "${space}${space}${space}${space}web => '$web_url',";
+    } else {
+      push @resourses, "${space}${space}${space}${space}#see CPAN::Meta::Spec";
+    }
+    push @resourses, "${space}${space}${space}},";
+  } else {
+    push @resourses, "${space}${space}${space}$repo_string";
   }
 
   if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/ || $content=~/\bVERSION_FROM\s*=>\s*q\[?([^\]\n]+)\]/) {
@@ -147,7 +173,11 @@ EOT
       if (@links==1) {
         my $bt=$links[0];
         print "Bugtracker found: $bt\n";
-        push @resourses, "${space}${space}${space}bugtracker => '$bt',";
+        if ($meta_modify_ver == 2)  {
+          push @resourses, "${space}${space}${space}bugtracker => { 'web' => '$bt' },";
+        } else {
+          push @resourses, "${space}${space}${space}bugtracker => '$bt',";
+        }
       } elsif (@links>1) {
         print "Too many links to bugtrackers found in $main_file\n";
       }
@@ -177,11 +207,16 @@ EOT
     }
   }
 
-  if (@resourses and $content !~ /\bMETA_MERGE\s*=>\s*\{/) {
+  if (@resourses) { # and $content !~ /\bMETA_MERGE\s*=>\s*\{/
     my $res=join("\n",@resourses);
+    my $metaspec = '';
     #'meta-spec' => { version => 2 },
+    
+    if ($meta_modify_ver == 2 && !$meta_modify_persent)  {
+      $metaspec="\n        'meta-spec' => { version => 2 },";
+    }
     push @param,<<EOT;
-    META_MERGE => {
+    META_MERGE => {$metaspec
         resources => {
 $res
         },

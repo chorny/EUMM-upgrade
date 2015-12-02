@@ -9,11 +9,11 @@ App::EUMM::Upgrade - Perl tool to upgrade ExtUtils::MakeMaker-based Makefile.PL
 
 =head1 VERSION
 
-Version 0.24
+Version 0.25
 
 =cut
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 
 =head1 SYNOPSIS
@@ -100,8 +100,9 @@ Copyright 2009-2015 Alexandr Ciornii.
 GPL v3
 
 =cut
+
 use Exporter 'import';
-our @EXPORT=qw/remove_conditional_code find_repo/;
+our @EXPORT=qw/remove_conditional_code find_repo convert_url_to_public convert_url_to_web/;
 sub _indent_space_number {
   my $str=shift;
   $str=~/^(\s+)/ or return 0;
@@ -247,41 +248,41 @@ sub _find_repo {
             # XXX Make it public clone URL, but this only works with github
             $git_url = $1;
             $git_url =~ s![\w\-]+\@([^:]+):!git://$1/!;
-            return $git_url;
+            return ('git', $git_url);
         } elsif ($execute->('git svn info') =~ /URL: (.*)$/m) {
             $git_url = $1;
         }
         return '' if $git_url =~ /\A\w+\z/;# invalid github remote might come back with just the remote name
-        return $git_url;
+        return ('git', $git_url);
     } elsif (-e ".svn") {
         if ($execute->('svn info') =~ /URL: (.*)$/m) {
-            return $1;
+            return ('svn', $1);
         }
     } elsif (-e "_darcs") {
         # defaultrepo is better, but that is more likely to be ssh, not http
         if (my $query_repo = `darcs query repo`) {
             if ($query_repo =~ m!Default Remote: (http://.+)!) {
-                return $1;
+                return ('darcs', $1);
             }
         }
 
         open my $handle, '<', '_darcs/prefs/repos' or return;
         while (<$handle>) {
             chomp;
-            return $_ if m!^http://!;
+            return ('darcs', $_) if m!^http://!;
         }
     } elsif (-e ".hg") {
         if ($execute->('hg paths') =~ /default = (.*)$/m) {
             my $mercurial_url = $1;
-            $mercurial_url =~ s!^ssh://hg\@(bitbucket\.org/)!https://$1!;
-            return $mercurial_url;
+            $mercurial_url =~ s!^ssh://hg\@(bitbucket\.org/)!https://$1/!;
+            return ('hg', $mercurial_url);
         }
     } elsif ($ENV{HOME} && -e "$ENV{HOME}/.svk") {
         # Is there an explicit way to check if it's an svk checkout?
         my $svk_info = `svk info` or return;
         SVK_INFO: {
             if ($svk_info =~ /Mirrored From: (.*), Rev\./) {
-                return $1;
+                return ('svk', $1);
             }
 
             if ($svk_info =~ m!Merged From: (/mirror/.*), Rev\.!) {
@@ -292,6 +293,24 @@ sub _find_repo {
 
         return;
     }
+}
+
+sub convert_url_to_public {
+  my $url = shift;
+  $url =~ s#^(?:ssh://|git://)?git\@(github\.com|bitbucket\.org)[:/]#https://$1/# and return $url;
+  #ssh://git@bitbucket.org/shlomif/fc-solve.git
+
+  $url =~ s#^(?:ssh://)hg\@(bitbucket\.org)/#https://$1/# and return $url;
+  #ssh://hg@bitbucket.org/shlomif/app-notifier
+
+  return $url;
+}    
+
+sub convert_url_to_web {
+  my $url = shift;
+  $url =~ s#^(?:https?|git)://(github\.com|bitbucket\.org)/(.*)\.git#https://$1/$2# and return $url;
+  $url =~ s#^https?://(bitbucket\.org)/(.*)#https://$1/$2# and return $url;
+  return;
 }
 
 1; # End of App::EUMM::Upgrade

@@ -1,6 +1,7 @@
 Revision history for App-EUMM-Upgrade
 
         Option to skip searching for github parent repository
+        Use meta-spec 2 in case of github and bitbucket
 
 0.24    2015-04-12
         Perl::Meta is used
