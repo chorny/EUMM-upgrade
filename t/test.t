@@ -23,7 +23,7 @@ my $text1=<<'EOT';
 		},
 	},
 EOT
-is(App::EUMM::Upgrade::_unindent("\t",$text),$text1);
+is(App::EUMM::Upgrade::_unindent("\t",$text),$text1, '_unindent');
 
 }
 
@@ -150,6 +150,20 @@ my $text1=<<'EOT';
     AUTHOR         => '***',
 EOT
 is(App::EUMM::Upgrade::remove_conditional_code($text,"  "),$text1);
+
+}
+
+{
+my $text=<<'EOT';
+ aaa
+   bbb
+EOT
+
+my $text1=<<'EOT';
+  aaa
+      bbb
+EOT
+is(App::EUMM::Upgrade::apply_indent($text,1,2),$text1, 'apply_indent');
 
 }
 

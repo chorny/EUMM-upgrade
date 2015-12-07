@@ -221,6 +221,27 @@ sub remove_conditional_code {
   return $content;
 }
 
+sub _do_replace {
+  my $spaces=shift;
+  my $i_from=shift;
+  my $i_to=shift;
+  my $len=length($spaces);
+  my $l1=int($len/$i_from);
+  if ($i_to==0) {
+    return "\t"x$l1;
+  } else {
+    return " " x ($l1*$i_to);
+  }
+}
+
+sub apply_indent {
+  my $content=shift;
+  my $i_from=shift || die;
+  my $i_to=shift;
+  $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$i_to)/emg;
+  return $content;
+}
+
 
 
 

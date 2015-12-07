@@ -50,25 +50,6 @@ sub process_file {
     $indent_str=' 'x4;
   }
 
-  {
-    no strict 'refs';
-    *{__PACKAGE__.'::apply_indent'} = sub {
-      my $content=shift;
-      my $i_from=shift || die;
-      my $i_to=shift;
-      *{__PACKAGE__.'::_do_replace'} = sub {
-        my $spaces=shift;
-        my $i_from=shift;
-        my $indent_str=shift;
-        my $len=length($spaces);
-        my $l1=int($len/$i_from);
-        return $indent_str x $l1;
-      };
-    $content=~s/^((?:[ ]{$i_from})+)/_do_replace($1,$i_from,$indent_str)/emg;
-    return $content;
-  };
-  }
-
   my $compat_layer=<<'EOT';
 sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by Alexandr Ciornii, version 0.23. Added by eumm-upgrade.
     my %params=@_;
@@ -231,7 +212,7 @@ EOT
   my $param='';
   if (@param) {
     $param="\n".join('',@param);
-    $param=apply_indent($param,4,$space_to_use);
+    $param = App::EUMM::Upgrade::apply_indent($param,4,$space_to_use);
     $param=~s/\s+$/\n/s;
   }
   my $text2replace = 'WriteMakefile\(';
@@ -244,7 +225,7 @@ EOT
   $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
   #$content=~s/[\r\n]+$//s;
-  $compat_layer="\n\n".apply_indent($compat_layer,4,$space_to_use);
+  $compat_layer="\n\n".App::EUMM::Upgrade::apply_indent($compat_layer,4,$space_to_use);
   $content=~s/(package\s+MY; | __DATA__ | $ )/$compat_layer$1/sx;
   # |
   #
