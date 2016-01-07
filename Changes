@@ -1,26 +1,27 @@
 Revision history for App-EUMM-Upgrade
 
-        Option to skip searching for github parent repository
-        Use meta-spec 2 in case of github and bitbucket
+0.25
+        - Option to skip searching for github parent repository
+        - Use meta-spec 2 in case of github and bitbucket
 
 0.24    2015-04-12
-        Perl::Meta is used
-        Better reindentation when outer block is removed
-        Better detection of exisiting BUILD_REQUIRES
-        Better detection of version-checking constructs
-        Better search for 'Perl' license
-        Scan 'author' section for license
-        Support for arrayref in 'AUTHOR'
-        Check for "package MY"
-        Support TEST_REQUIRES
-        Don't write compatibility code for perl < 5.005
+        - Perl::Meta is used
+        - Better reindentation when outer block is removed
+        - Better detection of exisiting BUILD_REQUIRES
+        - Better detection of version-checking constructs
+        - Better search for 'Perl' license
+        - Scan 'author' section for license
+        - Support for arrayref in 'AUTHOR'
+        - Check for "package MY"
+        - Support TEST_REQUIRES
+        - Don't write compatibility code for perl < 5.005
 
 0.22    2010-01-11
-        Better detection of version-checking constructs
-        Better search for 'Perl' license
-        Better detection of indent type
-        Other minor changes
-        Docs about new EUMM features
+        - Better detection of version-checking constructs
+        - Better search for 'Perl' license
+        - Better detection of indent type
+        - Other minor changes
+        - Docs about new EUMM features
 
 0.21    2009-12-18
-        First version released to CPAN
+        - First version released to CPAN
