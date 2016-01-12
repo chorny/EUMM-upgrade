@@ -1,7 +1,10 @@
 use strict;
 use warnings;
-use App::EUMM::Upgrade 'convert_url_to_web';
+use App::EUMM::Upgrade qw/convert_url_to_public convert_url_to_web/;
 use Test::More 0.88;
+
+is(convert_url_to_public('https://chorny@bitbucket.org/shlomif/fc-solve.git'), 'https://bitbucket.org/shlomif/fc-solve.git');
+
 is(convert_url_to_web('git://github.com/aanari/MooseX-Modern.git'), 'https://github.com/aanari/MooseX-Modern');
 is(convert_url_to_web('https://github.com/aanari/MooseX-Modern.git'), 'https://github.com/aanari/MooseX-Modern');
 is(convert_url_to_web('http://bitbucket.org/kzys/test-apache2'), 'https://bitbucket.org/kzys/test-apache2');

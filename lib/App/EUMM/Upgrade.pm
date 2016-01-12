@@ -324,6 +324,9 @@ sub convert_url_to_public {
   $url =~ s#^(?:ssh://)hg\@(bitbucket\.org)/#https://$1/# and return $url;
   #ssh://hg@bitbucket.org/shlomif/app-notifier
 
+  $url =~ s#^https://(\w+)\@(bitbucket\.org)/#https://$2/# and return $url;
+  #ssh://hg@bitbucket.org/shlomif/app-notifier
+
   return $url;
 }    
 
