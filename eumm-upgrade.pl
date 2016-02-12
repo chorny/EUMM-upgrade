@@ -127,10 +127,16 @@ EOT
 
   if ($content=~/\bVERSION_FROM['"]?\s*=>\s*['"]([^'"\n]+)['"]/ || $content=~/\bVERSION_FROM\s*=>\s*q\[?([^\]\n]+)\]/) {
     my $main_file=$1;
-    my $main_file_content=eval { read_file($1) };
+    my $main_file_pod = $1;
+    my $main_file_content = eval { read_file($main_file) };
     if (!$main_file_content) {
       print "Cannot open $main_file\n";
     } else {
+      if ($main_file_pod =~ s/\.pm$/\.pod/ && -e $main_file_pod) {
+        $main_file_content .= "\n\n".eval { read_file($main_file_pod) };
+      } else {
+        $main_file_pod = '';
+      }
       my @links=Perl::Meta::extract_bugtracker($main_file_content);
       if (@links==2) {
         my $remove;
