@@ -332,6 +332,7 @@ sub convert_url_to_public {
 
 sub convert_url_to_web {
   my $url = shift;
+  return unless $url;
   $url =~ s#^(?:https?|git)://(github\.com|bitbucket\.org)/(.*)\.git#https://$1/$2# and return $url;
   $url =~ s#^https?://(bitbucket\.org)/(.*)#https://$1/$2# and return $url;
   return;
