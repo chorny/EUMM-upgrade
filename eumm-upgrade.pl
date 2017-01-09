@@ -168,7 +168,7 @@ EOT
       } elsif (@links>1) {
         print "Too many links to bugtrackers found in $main_file\n";
       }
-      if ($content !~ /\bLICENSE\s*=>\s*['"]/ and $content !~ /'LICENSE'\s*=>\s*['"]/) {
+      if ($content !~ /\bLICENSE\s*=>\s*['"]/ and $content !~ /['"]LICENSE['"]\s*=>\s*['"]/) {
         my $l=Perl::Meta::extract_license($main_file_content);
         if ($l) {
           push @param,"    LICENSE => '$l',\n";
