@@ -95,7 +95,7 @@ L<http://search.cpan.org/dist/App-EUMM-Upgrade/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009-2015 Alexandr Ciornii.
+Copyright 2009-2017 Alexandr Ciornii.
 
 GPL v3
 
@@ -118,7 +118,7 @@ sub _unindent_t {
 sub _unindent {
   my $space_string_to_set=shift;
   my $text=shift;
-  print "#'$space_string_to_set','$text'\n";
+  #print "#'$space_string_to_set','$text'\n";
   my @lines=split /(?<=[\x0A\x0D])/s,$text;
   use List::Util qw/min/;
   my $minspace=min(map {_indent_space_number($_)} @lines);
@@ -190,7 +190,7 @@ sub _unindent {
 sub remove_conditional_code {
   my $content=shift;
   my $space=shift;
-  $content=~s/(WriteMakefile\()(\S)/$1\n$space$2/;
+  $content=~s/(WriteMakefile\()(?!\%)(\S)/$1\n$space$2/;
 
   $content=~s/
   \(\s*\$\]\s*>=\s*5\.005\s*\?\s*(?:\#\#\s*\QAdd these new keywords supported since 5.005\E\s*)?
@@ -242,6 +242,20 @@ sub apply_indent {
   return $content;
 }
 
+sub add_new_fields {
+  my $content = shift;
+  my $new_fields = shift;
+  my $text2replace = 'WriteMakefile\(';
+  if ($content =~ /WriteMakefile\(\s*(\%\w+)\s*\);/) {
+    my $var_params = $1;
+    $text2replace = qr/$var_params\s*=\s*\(\s*$/m;
+    $content =~ s/($text2replace)/$1$new_fields/ or die "Cannot find $var_params initialization in Makefile.PL";
+    $content =~ s/WriteMakefile\s*\(/WriteMakefile1(/s;
+  } else {
+    $content =~ s/WriteMakefile\s*\(/WriteMakefile1($new_fields/s;
+  }
+  return $content;
+}
 
 
 

@@ -80,7 +80,7 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
 }
 EOT
   my $space=' 'x4;
-  $content=~s/(WriteMakefile\()(\S)/$1\n$indent_str$2/;
+  $content=~s/(WriteMakefile\()(?!\%)(\S)/$1\n$indent_str$2/;
   $content=remove_conditional_code($content,$indent_str);
   my @param;
 
@@ -221,14 +221,9 @@ EOT
     $param = App::EUMM::Upgrade::apply_indent($param,4,$space_to_use);
     $param=~s/\s+$/\n/s;
   }
-  my $text2replace = 'WriteMakefile\(';
-  #if ($content =~ /WriteMakefile\(\s*(\%\w+)\s*\);/) {
-  #  my $var_params = $1;
-  #  $text2replace = qr/$var_params\s*=\s*\((?:\s|\n)*/;
-  #}
-  
-  #$content=~s/($text2replace)(\S)/$1\n$indent_str$2/;
-  $content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
+  $content = App::EUMM::Upgrade::add_new_fields($content, $param);
+  #my $text2replace = 'WriteMakefile\(';
+  #$content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
   #$content=~s/[\r\n]+$//s;
   $compat_layer="\n\n".App::EUMM::Upgrade::apply_indent($compat_layer,4,$space_to_use);

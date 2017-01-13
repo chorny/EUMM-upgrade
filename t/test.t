@@ -167,7 +167,43 @@ is(App::EUMM::Upgrade::apply_indent($text,1,2),$text1, 'apply_indent');
 
 }
 
+{
+my $text=<<'EOT';
+WriteMakefile(
+  "ABSTRACT" => "Test abstract",
+);
+EOT
+
+my $text1=<<'EOT';
+WriteMakefile1(TEST => 'test',
+  "ABSTRACT" => "Test abstract",
+);
+EOT
+is(App::EUMM::Upgrade::add_new_fields($text,"TEST => 'test',"),$text1, 'add_new_fields');
+
+}
+
+{
+my $text=<<'EOT';
+my %WriteMakefileArgs = (
+  "ABSTRACT" => "Test abstract",
+);
+WriteMakefile(%WriteMakefileArgs);
+EOT
+
+my $text1=<<'EOT';
+my %WriteMakefileArgs = (TEST => 'test',
+  "ABSTRACT" => "Test abstract",
+);
+WriteMakefile1(%WriteMakefileArgs);
+EOT
+is(App::EUMM::Upgrade::add_new_fields($text,"TEST => 'test',"),$text1, 'add_new_fields');
+
+}
+
 =for cmt
+
+
 =cut
 
 done_testing;
