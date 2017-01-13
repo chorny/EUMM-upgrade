@@ -46,8 +46,12 @@ be in the future.
 
 CONFIGURE_REQUIRES - modules that are used in Makefile.PL and should be installed before running it.
 
-BUILD_REQUIRES - modules that are used in installation and testing, but are not required by module
+TEST_REQUIRES - modules that are used in tests, but are not required by module
 itself. Useful for ppm/OS package generaton and metadata parsing tools.
+
+BUILD_REQUIRES - same as TEST_REQUIRES, but for building
+
+AUTHOR - can be arrayref to allow several authors
 
 =head1 AUTHOR
 
