@@ -12,7 +12,7 @@ WriteMakefile1(
   'PREREQ_PM' => {
                    'ExtUtils::MakeMaker' => '6.56',
                    'File::Slurp' => 0,
-                   'Github::Fork::Parent' => '0.23',
+                   'Github::Fork::Parent' => '0.24',
                    'Perl::Meta' => '0.03',
                    'Text::FindIndent' => '0.08',
   },
@@ -39,6 +39,12 @@ WriteMakefile1(
                    'eumm-upgrade.pl'
                  ],
   'PL_FILES' => {}
+  $^O =~/win/i ? (
+    dist => {
+      TAR      => 'ptar',
+      TARFLAGS => '-c -C -f',
+    },
+  ) : (),
 )
 ;
 
