@@ -250,9 +250,9 @@ sub add_new_fields {
     my $var_params = $1;
     $text2replace = qr/$var_params\s*=\s*\(\s*$/m;
     $content =~ s/($text2replace)/$1$new_fields/ or die "Cannot find $var_params initialization in Makefile.PL";
-    $content =~ s/WriteMakefile\s*\(/WriteMakefile1(/s;
+    $content =~ s/WriteMakefile\s*\(/WriteMakefile(/s;
   } else {
-    $content =~ s/WriteMakefile\s*\(/WriteMakefile1($new_fields/s;
+    $content =~ s/WriteMakefile\s*\(/WriteMakefile($new_fields/s;
   }
   return $content;
 }

@@ -4,7 +4,8 @@ Revision history for App-EUMM-Upgrade
         - Option to skip searching for github parent repository
         - Use meta-spec 2 in case of github and bitbucket
         - When loading file from VERSION_FROM, also check if pod file is available
-        - Detect WriteMakefile(%hash) and add new fields to %hash instead.
+        - Detect WriteMakefile(%hash) and add new fields to %hash instead
+        - Detect Dist::Zilla compatibility code and do not add own
         - Other small changes
 
 0.24    2015-04-12

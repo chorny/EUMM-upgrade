@@ -175,7 +175,7 @@ WriteMakefile(
 EOT
 
 my $text1=<<'EOT';
-WriteMakefile1(TEST => 'test',
+WriteMakefile(TEST => 'test',
   "ABSTRACT" => "Test abstract",
 );
 EOT
@@ -195,7 +195,7 @@ my $text1=<<'EOT';
 my %WriteMakefileArgs = (TEST => 'test',
   "ABSTRACT" => "Test abstract",
 );
-WriteMakefile1(%WriteMakefileArgs);
+WriteMakefile(%WriteMakefileArgs);
 EOT
 is(App::EUMM::Upgrade::add_new_fields($text,"TEST => 'test',"),$text1, 'add_new_fields');
 

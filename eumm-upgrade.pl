@@ -50,6 +50,12 @@ sub process_file {
     $indent_str=' 'x4;
   }
 
+  my $DZ_compatibility_code = 0;
+  if ($content =~ /\QWriteMakefileArgs{PREREQ_PM} = \%FallbackPrereqs;\E/) {
+    print "Dist::Zilla compatibility code detected, skipping own code\n";
+    $DZ_compatibility_code++;
+  }
+
   my $compat_layer=<<'EOT';
 sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by Alexandr Ciornii, version 2. Added by eumm-upgrade.
     my %params=@_;
@@ -80,8 +86,10 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
 }
 EOT
   my $space=' 'x4;
-  $content=~s/(WriteMakefile\()(?!\%)(\S)/$1\n$indent_str$2/;
-  $content=remove_conditional_code($content,$indent_str);
+  unless ($DZ_compatibility_code) {
+    $content=~s/(WriteMakefile\()(?!\%)(\S)/$1\n$indent_str$2/;
+    $content=remove_conditional_code($content,$indent_str) ;
+  }
   my @param;
 
   my $meta_modify_persent = 0;
@@ -222,14 +230,12 @@ EOT
     $param=~s/\s+$/\n/s;
   }
   $content = App::EUMM::Upgrade::add_new_fields($content, $param);
-  #my $text2replace = 'WriteMakefile\(';
-  #$content=~s/WriteMakefile\s*\(/WriteMakefile1($param/s;
 
-  #$content=~s/[\r\n]+$//s;
-  $compat_layer="\n\n".App::EUMM::Upgrade::apply_indent($compat_layer,4,$space_to_use);
-  $content=~s/(package\s+MY; | __DATA__ | $ )/$compat_layer$1/sx;
-  # |
-  #
+  unless ($DZ_compatibility_code) {
+    $content =~ s/WriteMakefile\s*\(/WriteMakefile1(/s;
+    $compat_layer="\n\n".App::EUMM::Upgrade::apply_indent($compat_layer,4,$space_to_use);
+    $content=~s/(package\s+MY; | __DATA__ | $ )/$compat_layer$1/sx;
+  }
   return $content;
 }
 
