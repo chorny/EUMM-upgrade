@@ -9,11 +9,11 @@ App::EUMM::Upgrade - Perl tool to upgrade ExtUtils::MakeMaker-based Makefile.PL
 
 =head1 VERSION
 
-Version 0.25
+Version 1.0
 
 =cut
 
-our $VERSION = '0.25';
+our $VERSION = '1.0';
 
 
 =head1 SYNOPSIS
@@ -221,7 +221,7 @@ sub remove_conditional_code {
           \)\s*\:\s*\(\)\s*\),
   /$1,/sxg;
 #    ($] >= 5.005 ?
-#       (AUTHOR         => 'Stephen Hardisty <moowahaha@hotmail.com>') : ()),
+#       (AUTHOR         => 'Author <notexistingemail@hotmail.com>') : ()),
   return $content;
 }
 

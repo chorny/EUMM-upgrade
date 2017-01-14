@@ -4,6 +4,7 @@ MANIFEST
 README
 lib/App/EUMM/Upgrade.pm
 t/00-load.t
+t/convert_url.t
 t/test.t
 Makefile.PL
 META.yml

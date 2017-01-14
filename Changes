@@ -1,6 +1,6 @@
 Revision history for App-EUMM-Upgrade
 
-0.25
+1.0     2017-01-14
         - Option to skip searching for github parent repository
         - Use meta-spec 2 in case of github and bitbucket
         - When loading file from VERSION_FROM, also check if pod file is available
