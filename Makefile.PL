@@ -11,7 +11,7 @@ WriteMakefile1(
   'PREREQ_PM' => {
                    'ExtUtils::MakeMaker' => '6.56',
                    'File::Slurp' => 0,
-                   'Github::Fork::Parent' => '0.24',
+                   'Github::Fork::Parent' => '1.0',
                    'Perl::Meta' => '0.03',
                    'Text::FindIndent' => '0.08',
   },
