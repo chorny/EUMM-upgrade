@@ -163,7 +163,21 @@ my $text1=<<'EOT';
   aaa
       bbb
 EOT
-is(App::EUMM::Upgrade::apply_indent($text,1,2),$text1, 'apply_indent');
+is(App::EUMM::Upgrade::apply_indent($text,1,2),$text1, 'apply_indent 1->2');
+
+}
+
+{
+my $text=<<'EOT';
+    aaa
+        bbb
+EOT
+
+my $text1=<<'EOT';
+    aaa
+        bbb
+EOT
+is(App::EUMM::Upgrade::apply_indent($text,4,4),$text1, 'apply_indent 4->4');
 
 }
 
