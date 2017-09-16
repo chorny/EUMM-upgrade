@@ -63,6 +63,33 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
     $eumm_version=eval $eumm_version;
     die "EXTRA_META is deprecated" if exists $params{EXTRA_META};
     die "License not specified" if not exists $params{LICENSE};
+    if ($params{META_MERGE} and $params{META_MERGE}->{'meta-spec'}->{version} >= 2 and $eumm_version < 6.68) {
+        #EUMM prior to 6.68 has problems with meta-spec 2 and removes everything in build_requires and requires
+        delete $params{META_MERGE}->{'meta-spec'};
+        if ($params{META_MERGE}->{resources}) {
+            foreach (values %{$params{META_MERGE}->{resources}}) {
+                $_ = $_->{url} || $_->{web} if ref $_ eq 'HASH';
+            }
+        }
+        if ($params{META_MERGE}->{prereqs}) {
+            $params{CONFIGURE_REQUIRES} = { %{$params{CONFIGURE_REQUIRES} || {'ExtUtils::MakeMaker' => 0}}, %{$params{META_MERGE}->{prereqs}->{configure}->{requires} || {}} };
+            $params{BUILD_REQUIRES} = { %{$params{BUILD_REQUIRES} || {'ExtUtils::MakeMaker' => 0}}, %{$params{META_MERGE}->{prereqs}->{build}->{requires} || {}} };
+            $params{TEST_REQUIRES} = { %{$params{TEST_REQUIRES} || {}}, %{$params{META_MERGE}->{prereqs}->{test}->{requires} || {}} };
+            $params{PREREQ_PM} = { %{$params{PREREQ_PM} || {}}, %{$params{META_MERGE}->{prereqs}->{runtime}->{requires} || {}} };
+            my @recommends = (
+                %{$params{META_MERGE}->{prereqs}->{configure}->{recommends} || {}},
+                %{$params{META_MERGE}->{prereqs}->{configure}->{suggests} || {}},
+                %{$params{META_MERGE}->{prereqs}->{build}->{recommends} || {}},
+                %{$params{META_MERGE}->{prereqs}->{build}->{suggests} || {}},
+                %{$params{META_MERGE}->{prereqs}->{test}->{recommends} || {}},
+                %{$params{META_MERGE}->{prereqs}->{test}->{suggests} || {}},
+                %{$params{META_MERGE}->{prereqs}->{runtime}->{recommends} || {}},
+                %{$params{META_MERGE}->{prereqs}->{runtime}->{suggests} || {}},
+            );
+            $params{META_MERGE}->{recommends} = { %{$params{META_MERGE}->{recommends} || {}}, @recommends } if @recommends;
+            delete $params{META_MERGE}->{prereqs};
+        }
+    }
     if ($params{AUTHOR} and ref($params{AUTHOR}) eq 'ARRAY' and $eumm_version < 6.5705) {
         $params{META_ADD}->{author}=$params{AUTHOR};
         $params{AUTHOR}=join(', ',@{$params{AUTHOR}});
