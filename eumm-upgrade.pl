@@ -81,7 +81,11 @@ sub WriteMakefile1 {  #Compatibility code for old versions of EU::MM. Written by
         $params{PREREQ_PM}={ %{$params{PREREQ_PM} || {}} , %{$params{CONFIGURE_REQUIRES}} };
         delete $params{CONFIGURE_REQUIRES};
     }
-    delete $params{MIN_PERL_VERSION} if $eumm_version < 6.48;
+    if ($params{MIN_PERL_VERSION} and $eumm_version < 6.48) {
+        #EUMM prior to 6.48 has problems with MIN_PERL_VERSION
+        $params{PREREQ_PM}={ %{$params{PREREQ_PM} || {}} , perl => $params{MIN_PERL_VERSION} };
+        delete $params{MIN_PERL_VERSION};
+    }
     delete $params{META_MERGE} if $eumm_version < 6.46;
     delete $params{META_ADD} if $eumm_version < 6.46;
     delete $params{LICENSE} if $eumm_version < 6.31;
